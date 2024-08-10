@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { getRoomTypes } from "../utils/ApiFunctions"
 import PropTypes from 'prop-types';
 

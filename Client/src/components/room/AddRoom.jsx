@@ -18,10 +18,9 @@ const AddRoom = () => {
         let value = e.target.value
         if (name == "roomPrice") {
             if (!isNaN(value)) value = parseInt(value,10)
+            else value = ""
         }
-        else {
-            value = ""
-        }
+
         setNewRoom({...newRoom, [name]: value})
     }
 
@@ -32,12 +31,12 @@ const AddRoom = () => {
     }
 
     const handleSubmit = async (e) =>{
-        e.prevetDefault()
+        e.preventDefault()
         try{
             const success = await addRoom(newRoom.photo,newRoom.roomType,newRoom.roomPrice)
-            if(success){    // I changed success !== undefined to success as addRoom return boolean value
+            if(success !== undefined){    // I changed success !== undefined to success as addRoom return boolean value
                 setSuccessMessage("A new room was added to the database")
-                setNewRoom({photo: null, roomType:"", roomPrice:""})
+                setNewRoom({photo: null, roomType:"", roomPrice:0})
                 setImagePreview("")
                 setErrorMessage("")
             }
@@ -84,7 +83,7 @@ const AddRoom = () => {
                             style={{maxWidth:"400px", maxHeight:"400px"}} className="mb-3"/> )}
                         </div>
                         <div className="d-grid d-md-flex mt-2">
-                            <button className="btn btn-outline-primary ml-5">Save Room</button>
+                            <button type="submit" className="btn btn-outline-primary ml-5">Save Room</button>
                         </div>
                     </form>
                 </div>
