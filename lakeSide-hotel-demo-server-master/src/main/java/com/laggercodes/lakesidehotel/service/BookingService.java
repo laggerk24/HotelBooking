@@ -9,6 +9,6 @@ import java.util.List;
 public class BookingService implements IBookingService{
     @Override
     public List<BookedRoom> getAllBookingsByRoomId(Long roomId) {
-        return List.of();
+        return null;
     }
 }
