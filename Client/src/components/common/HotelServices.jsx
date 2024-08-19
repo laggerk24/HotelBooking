@@ -8,11 +8,11 @@ const HotelServices = () => {
     return (
         <Container className='mb-2'>
             <Header title={"Our Services"} />
-            <Row>
+            <Row className='mt-4'>
                 <h4 className='text-center'>
                     Services at <span className='hotel-color'>Bookerrr </span>
                     <span className='gap-2' >
-                        <FaClock /> - 24-Hour Front Desk
+                        <FaClock /> 24-Hour Front Desk
                     </span>
                 </h4>
             </Row>
@@ -34,7 +34,7 @@ const HotelServices = () => {
                             <Card.Title className='hotel-color'>
                                 <FaUtensils/> Breakfast
                             </Card.Title>
-                            <Card.Text>Star</Card.Text>
+                            <Card.Text>Start with delcious cusine at our hotel to kick start your day</Card.Text>
                         </Card.Body>
                     </Card>
                 </Col>
