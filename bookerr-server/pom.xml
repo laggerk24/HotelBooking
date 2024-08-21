@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.dailycodework</groupId>
-    <artifactId>lakeSide-hotel</artifactId>
+    <artifactId>Bookerrr</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>lakeSide-hotel</name>
     <description>lakeSide-hotel</description>
