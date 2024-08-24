@@ -12,8 +12,8 @@ const DateSlider = ({onDateChange, onFilterChange}) => {
 
     const handleSelect = (ranges) => {
         setDateRange(ranges.selection)
-        onDateChange(ranges.selection.starDate,ranges.selection.endDate)
-        onFilterChange(ranges.selection.starDate, ranges.selection.endDate)
+        onDateChange(ranges.selection.startDate,ranges.selection.endDate)
+        onFilterChange(ranges.selection.startDate, ranges.selection.endDate)
     }
 
     const handleClearFilter = () => {
