@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/rooms")
 public class RoomController {
     private final IRoomService roomService;

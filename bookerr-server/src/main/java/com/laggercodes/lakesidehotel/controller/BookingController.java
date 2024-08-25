@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController()
-@CrossOrigin
 @RequestMapping("/bookings")
 public class BookingController {
 
