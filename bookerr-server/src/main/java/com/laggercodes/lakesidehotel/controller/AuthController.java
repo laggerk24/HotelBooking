@@ -2,16 +2,34 @@ package com.laggercodes.lakesidehotel.controller;
 
 import com.laggercodes.lakesidehotel.exception.UserAlreadyExistsException;
 import com.laggercodes.lakesidehotel.model.User;
+import com.laggercodes.lakesidehotel.request.LoginRequest;
+import com.laggercodes.lakesidehotel.response.JwtResponse;
+import com.laggercodes.lakesidehotel.security.jwt.JwtUtils;
+import com.laggercodes.lakesidehotel.security.user.HotelUserDetails;
 import com.laggercodes.lakesidehotel.service.IUserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@RestController
+@RequestMapping("/auth")
 public class AuthController {
     private final IUserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
 
-    public AuthController(IUserService userService) {
+    public AuthController(IUserService userService, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
         this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtils = jwtUtils;
     }
 
     @PostMapping("/register-user")
@@ -22,5 +40,23 @@ public class AuthController {
         }catch (UserAlreadyExistsException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest request){
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtTokenForUser(authentication);
+        HotelUserDetails userDetails = (HotelUserDetails) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().
+                stream().map(GrantedAuthority::getAuthority).toList();
+        return ResponseEntity.ok(new JwtResponse(
+                userDetails.getId(),
+                userDetails.getEmail(),
+                jwt,
+                roles
+        ));
+
     }
 }

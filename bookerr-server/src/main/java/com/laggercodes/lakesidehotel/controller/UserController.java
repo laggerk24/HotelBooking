@@ -36,6 +36,7 @@ public class UserController {
     }
 
     @DeleteMapping("/delete/{userId}")
+    
     public ResponseEntity<String> deleteUser(@PathVariable("userId") String email){
         try{
             userService.deleteUser(email);
