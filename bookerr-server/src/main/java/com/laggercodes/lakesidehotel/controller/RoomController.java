@@ -5,6 +5,7 @@ import com.laggercodes.lakesidehotel.exception.PhotoRetrivalException;
 import com.laggercodes.lakesidehotel.exception.ResourceNotFoundException;
 import com.laggercodes.lakesidehotel.model.BookedRoom;
 import com.laggercodes.lakesidehotel.model.Room;
+import com.laggercodes.lakesidehotel.response.BookingResponse;
 import com.laggercodes.lakesidehotel.response.RoomResponse;
 import com.laggercodes.lakesidehotel.service.IBookingService;
 import com.laggercodes.lakesidehotel.service.IRoomService;
@@ -78,6 +79,7 @@ public class RoomController {
     }
 
     @PutMapping("/update/{roomId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<RoomResponse> updateRoom(@PathVariable Long roomId,
                                                    @RequestParam(required = false) String roomType,
                                                    @RequestParam(required = false) BigDecimal roomPrice,
@@ -124,12 +126,12 @@ public class RoomController {
 
     private RoomResponse getRoomResponse(Room room) {
         List<BookedRoom> bookings = getAllBookingsByRoomId(room.getId());
-//        List<BookingResponse> bookingInfo = bookings
-//                .stream()
-//                .map(booking -> new BookingResponse(booking.getBookingId(),
-//                        booking.getCheckInDate(),
-//                        booking.getCheckOutDate(),
-//                        booking.getBookingConfirmationCode())).toList();
+        List<BookingResponse> bookingInfo = bookings
+                .stream()
+                .map(booking -> new BookingResponse(booking.getBookingId(),
+                        booking.getCheckInDate(),
+                        booking.getCheckOutDate(),
+                        booking.getBookingConfirmationCode())).toList();
         byte[] photoBytes = null;
         Blob photoBlob = room.getPhoto();
         if(photoBlob != null){
