@@ -18,56 +18,50 @@ import java.util.List;
 @Component
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
+
     @Value("${auth.token.jwtSecret}")
     private String jwtSecret;
+
     @Value("${auth.token.expirationInMils}")
-    private int jwtExpirationTime;
+    private int jwtExpirationMs;
 
     public String generateJwtTokenForUser(Authentication authentication){
         HotelUserDetails userPrincipal = (HotelUserDetails) authentication.getPrincipal();
-        List<String> roles = userPrincipal
-                .getAuthorities()
-                .stream().map(GrantedAuthority::getAuthority).toList();
+        List<String> roles = userPrincipal.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority).toList();
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
-                .claim("roles",roles)
+                .claim("roles", roles)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime()+jwtExpirationTime))
+                .setExpiration(new Date((new Date()).getTime()+jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256).compact();
     }
 
     private Key key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode((jwtSecret)));
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
-
     public String getUserNameFromToken(String token){
-        return Jwts
-                .parserBuilder()
+        return Jwts.parserBuilder()
                 .setSigningKey(key())
-                .build().parseClaimsJws(token).getBody().getSubject();
+                .build()
+                .parseClaimsJws(token).getBody().getSubject();
     }
-
     public boolean validateToken(String token){
         try{
             Jwts.parserBuilder().setSigningKey(key()).build().parse(token);
             return true;
-        }catch (MalformedJwtException e){
-            logger.error("Invalid jwt token : {}", e.getMessage());
+        }catch(MalformedJwtException e){
+            logger.error("Invalid jwt token : {} ", e.getMessage());
         }catch (ExpiredJwtException e){
-            logger.error("Expired token : {}", e.getMessage());
+            logger.error("Expired token : {} ", e.getMessage());
         }catch (UnsupportedJwtException e){
             logger.error("This token is not supported : {} ", e.getMessage());
-        }catch(IllegalArgumentException e){
-            logger.error("No claims found : {}", e.getMessage());
+        }catch (IllegalArgumentException e){
+            logger.error("No  claims found : {} ", e.getMessage());
         }
         return false;
     }
+
+
 }
-
-
-
-
-
-
-
-

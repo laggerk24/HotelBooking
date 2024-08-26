@@ -1,6 +1,5 @@
 package com.laggercodes.lakesidehotel.controller;
 
-
 import com.laggercodes.lakesidehotel.exception.InvalidBookingRequestException;
 import com.laggercodes.lakesidehotel.exception.ResourceNotFoundException;
 import com.laggercodes.lakesidehotel.model.BookedRoom;
@@ -9,18 +8,19 @@ import com.laggercodes.lakesidehotel.response.BookingResponse;
 import com.laggercodes.lakesidehotel.response.RoomResponse;
 import com.laggercodes.lakesidehotel.service.IBookingService;
 import com.laggercodes.lakesidehotel.service.IRoomService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController()
+@RestController
 @RequestMapping("/bookings")
 public class BookingController {
-
     private final IBookingService bookingService;
     private final IRoomService roomService;
 
@@ -34,11 +34,24 @@ public class BookingController {
     public ResponseEntity<List<BookingResponse>> getAllBookings(){
         List<BookedRoom> bookings = bookingService.getAllBookings();
         List<BookingResponse> bookingResponses = new ArrayList<>();
-        for(BookedRoom room:bookings){
-            BookingResponse bookingResponse = getBookingResponse(room);
-            bookingResponses.add((bookingResponse));
+        for (BookedRoom booking : bookings){
+            BookingResponse bookingResponse = getBookingResponse(booking);
+            bookingResponses.add(bookingResponse);
         }
         return ResponseEntity.ok(bookingResponses);
+    }
+
+    @PostMapping("/room/{roomId}/booking")
+    public ResponseEntity<?> saveBooking(@PathVariable Long roomId,
+                                        @RequestBody BookedRoom bookingRequest){
+        try{
+            String confirmationCode = bookingService.saveBooking(roomId, bookingRequest);
+            return ResponseEntity.ok(
+                    "Room booked successfully, Your booking confirmation code is :"+confirmationCode);
+
+        }catch (InvalidBookingRequestException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/confirmation/{confirmationCode}")
@@ -47,21 +60,20 @@ public class BookingController {
             BookedRoom booking = bookingService.findByBookingConfirmationCode(confirmationCode);
             BookingResponse bookingResponse = getBookingResponse(booking);
             return ResponseEntity.ok(bookingResponse);
-        }
-        catch (ResourceNotFoundException ex){
+        }catch (ResourceNotFoundException ex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
 
-    @PostMapping("/room/{roomId}/booking")
-    public ResponseEntity<?> saveBooking(@PathVariable Long roomId, @RequestBody BookedRoom bookingRequest){
-        try{
-            String confirmationCode = bookingService.saveBooking(roomId,bookingRequest);
-            return ResponseEntity.ok("Room Booked successFully, Your booking confirmation code is :" + confirmationCode);
+    @GetMapping("/user/{email}/bookings")
+    public ResponseEntity<List<BookingResponse>> getBookingsByUserEmail(@PathVariable String email) {
+        List<BookedRoom> bookings = bookingService.getBookingsByUserEmail(email);
+        List<BookingResponse> bookingResponses = new ArrayList<>();
+        for (BookedRoom booking : bookings) {
+            BookingResponse bookingResponse = getBookingResponse(booking);
+            bookingResponses.add(bookingResponse);
         }
-        catch (InvalidBookingRequestException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok(bookingResponses);
     }
 
     @DeleteMapping("/booking/{bookingId}/delete")
@@ -71,7 +83,10 @@ public class BookingController {
 
     private BookingResponse getBookingResponse(BookedRoom booking) {
         Room theRoom = roomService.getRoomById(booking.getRoom().getId()).get();
-        RoomResponse room = new RoomResponse(theRoom.getId(), theRoom.getRoomType(),theRoom.getRoomPrice());
+        RoomResponse room = new RoomResponse(
+                theRoom.getId(),
+                theRoom.getRoomType(),
+                theRoom.getRoomPrice());
         return new BookingResponse(
                 booking.getBookingId(), booking.getCheckInDate(),
                 booking.getCheckOutDate(),booking.getGuestFullName(),

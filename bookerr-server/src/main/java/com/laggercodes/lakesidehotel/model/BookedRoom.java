@@ -1,6 +1,10 @@
 package com.laggercodes.lakesidehotel.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
@@ -17,7 +21,7 @@ public class BookedRoom {
     private LocalDate checkOutDate;
 
     @Column(name = "guest_fullName")
-    private String guestFullName; 
+    private String guestFullName;
 
     @Column(name = "guest_email")
     private String guestEmail;

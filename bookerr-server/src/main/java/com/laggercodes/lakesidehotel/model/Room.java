@@ -1,6 +1,9 @@
 package com.laggercodes.lakesidehotel.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.math.BigDecimal;
@@ -25,16 +28,6 @@ public class Room {
     public Room() {
         this.bookings = new ArrayList<>();
     }
-
-    public Room(Long id, String roomType, BigDecimal roomPrice, boolean isBooked, Blob photo, List<BookedRoom> bookings) {
-        this.id = id;
-        this.roomType = roomType;
-        this.roomPrice = roomPrice;
-        this.isBooked = isBooked;
-        this.photo = photo;
-        this.bookings = bookings;
-    }
-
     public void addBooking(BookedRoom booking){
         if (bookings == null){
             bookings = new ArrayList<>();
@@ -44,6 +37,15 @@ public class Room {
         isBooked = true;
         String bookingCode = RandomStringUtils.randomNumeric(10);
         booking.setBookingConfirmationCode(bookingCode);
+    }
+
+    public Room(Long id, String roomType, BigDecimal roomPrice, boolean isBooked, Blob photo, List<BookedRoom> bookings) {
+        this.id = id;
+        this.roomType = roomType;
+        this.roomPrice = roomPrice;
+        this.isBooked = isBooked;
+        this.photo = photo;
+        this.bookings = bookings;
     }
 
     public Long getId() {
