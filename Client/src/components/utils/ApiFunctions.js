@@ -19,7 +19,9 @@ export async function addRoom(photo,roomType,roomPrice) {
     formData.append("roomType",roomType)
     formData.append("roomPrice",roomPrice)
 
-    const response = await api.post("/rooms/add/new-room", formData)
+    const response = await api.post("/rooms/add/new-room", formData,{
+        headers: getHeader()
+    })
     if(response.status === 201) return true
     return false
 }
@@ -49,7 +51,9 @@ export async function getAllRooms(){
 // delete a room by Id
 export async function deleteRoom(roomId){
     try{
-        const result = await api.delete(`/rooms/delete/room/${roomId}`)
+        const result = await api.delete(`/rooms/delete/room/${roomId}`,{
+            headers: getHeader()
+        })
         return result.data;
     }
     catch(error){
@@ -64,7 +68,9 @@ export async function updateRoom(roomId, roomData){
     formData.append("roomPrice", roomData.roomPrice)
     formData.append("photo",roomData.photo)
 
-    const response = await api.put(`/rooms/update/${roomId}`, formData)
+    const response = await api.put(`/rooms/update/${roomId}`, formData,{
+        headers: getHeader()
+    })
     return response;
 }
 
@@ -97,7 +103,9 @@ export async function bookRoom(roomId, booking){
 //This gets all the bookings
 export async function getAllBookings() {
     try {
-        const response = await api.get("/bookings/all-bookings")
+        const response = await api.get("/bookings/all-bookings",{
+            headers: getHeader()
+        })
         return response.data
     } catch (error) {
         throw new Error(`Error fetching bookings : ${error.message} `)
@@ -122,7 +130,9 @@ export async function getBookingByConfirmation(confirmationCode){
 //This function canceles a booking
 export async function cancelBooking(bookingId){
     try {
-        const result = await api.delete(`/bookings/booking/${bookingId}/delete`)
+        const result = await api.delete(`/bookings/booking/${bookingId}/delete`,{
+            headers: getHeader()
+        })
         return result.data
     } catch (error) {
         throw new Error(`Error cancelling booking with Id ${bookingId} : ${error.message}`)
@@ -138,7 +148,7 @@ export async function getAvailableRooms(checkInDate, checkOutDate, roomType){
 // register a new user 
 export async function registerUser(registeration) {
     try {
-        const response = await api.post("/auth/register-user")
+        const response = await api.post("/auth/register-user",registeration)
         return response.data
     } catch (error) {
         if(error.response && error.response.data){
@@ -149,6 +159,7 @@ export async function registerUser(registeration) {
     }
 }
 
+// login with a new user
 export async function loginUser(login) {
     try{
         const response = await api.post("/auth/login", login)
@@ -163,6 +174,7 @@ export async function loginUser(login) {
     }
 }
 
+// get User Profile
 export async function getUserProfile(userId, token) {
 	try {
 		const response = await api.get(`users/profile/${userId}`, {
@@ -174,7 +186,7 @@ export async function getUserProfile(userId, token) {
 	}
 }
 
-
+// This is the function to delete a user
 export async function deleteUser(userId) {
     try {
         const response = await api.delete(`/users/delete/${userId}`,{
@@ -186,6 +198,7 @@ export async function deleteUser(userId) {
     }
 }
 
+// Function to get a single Use
 export async function getUser(userId, token) {
 	try {
 		const response = await api.get(`/users/${userId}`, {
@@ -197,6 +210,7 @@ export async function getUser(userId, token) {
 	}
 }
 
+//  Function to get user bookings by the userId
 export async function getBookingsByUserId(userId, token) {
 	try {
 		const response = await api.get(`/bookings/user/${userId}/bookings`, {
