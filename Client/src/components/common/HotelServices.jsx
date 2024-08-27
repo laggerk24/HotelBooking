@@ -24,7 +24,7 @@ const HotelServices = () => {
                             <Card.Title className='hotel-color'>
                                 <FaWifi/> Wifi
                             </Card.Title>
-                            <Card.Text>Stay connected with high-speed internet access.</Card.Text>
+                            <Card.Text>Stay connected with high-speed Unlimited internet access.</Card.Text>
                         </Card.Body>
                     </Card>
                 </Col>
