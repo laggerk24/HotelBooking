@@ -4,6 +4,14 @@ export const api = axios.create({
     baseURL : "http://localhost:9192"
 })
 
+export const getHeader = () => {
+    const token = localStorage.getItem("token")
+    return {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+    }
+}
+
 // This function add a new room to the database
 export async function addRoom(photo,roomType,roomPrice) {
     const formData = new FormData()
@@ -125,4 +133,78 @@ export async function cancelBooking(bookingId){
 export async function getAvailableRooms(checkInDate, checkOutDate, roomType){
     const results = await api.get(`rooms/available-rooms?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&roomType=${roomType}`)
     return results
+}
+
+// register a new user 
+export async function registerUser(registeration) {
+    try {
+        const response = await api.post("/auth/register-user")
+        return response.data
+    } catch (error) {
+        if(error.response && error.response.data){
+            throw new Error(error.response.data)
+        }else{
+            throw new Error(`User registeration error : ${error.message}`)
+        }
+    }
+}
+
+export async function loginUser(login) {
+    try{
+        const response = await api.post("/auth/login", login)
+        if(response.status >= 200 && response.status < 300){
+            return response.data
+        }else{
+            return null
+        }
+    }catch(error){
+        console.error(error)
+        return null
+    }
+}
+
+export async function getUserProfile(userId, token) {
+	try {
+		const response = await api.get(`users/profile/${userId}`, {
+			headers: getHeader()
+		})
+		return response.data
+	} catch (error) {
+		throw error
+	}
+}
+
+
+export async function deleteUser(userId) {
+    try {
+        const response = await api.delete(`/users/delete/${userId}`,{
+            headers: getHeader()
+        })
+        return response.data
+    } catch (error) {
+        return error.message
+    }
+}
+
+export async function getUser(userId, token) {
+	try {
+		const response = await api.get(`/users/${userId}`, {
+			headers: getHeader()
+		})
+		return response.data
+	} catch (error) {
+		throw error
+	}
+}
+
+export async function getBookingsByUserId(userId, token) {
+	try {
+		const response = await api.get(`/bookings/user/${userId}/bookings`, {
+			headers: getHeader()
+		})
+		return response.data
+	} catch (error) {
+		console.error("Error fetching bookings:", error.message)
+		throw new Error("Failed to fetch bookings")
+	}
 }
